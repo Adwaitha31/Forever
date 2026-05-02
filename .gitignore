@@ -1,0 +1,17 @@
+# Environment files
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Dependencies and build output
+node_modules
+**/node_modules
+dist
+**/dist
+dist-ssr
+**/dist-ssr
+
+# Common local files
+*.local
+.vercel
