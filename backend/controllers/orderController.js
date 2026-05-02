@@ -10,10 +10,14 @@ const deliveryCharge = 10
 // gateway initialize
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
-const razorpayInstance = new razorpay({
-    key_id : process.env.RAZORPAY_KEY_ID,
-    key_secret : process.env.RAZORPAY_KEY_SECRET,
-})
+// Only initialize Razorpay if real keys are provided (not placeholder text)
+let razorpayInstance = null
+if (process.env.RAZORPAY_KEY_ID && !process.env.RAZORPAY_KEY_ID.includes('Paste')) {
+    razorpayInstance = new razorpay({
+        key_id : process.env.RAZORPAY_KEY_ID,
+        key_secret : process.env.RAZORPAY_KEY_SECRET,
+    })
+}
 
 // Placing orders using COD Method
 const placeOrder = async (req,res) => {
@@ -130,6 +134,10 @@ const verifyStripe = async (req,res) => {
 const placeOrderRazorpay = async (req,res) => {
     try {
         
+        if (!razorpayInstance) {
+            return res.json({success:false, message: "Razorpay is not configured. Please add valid Razorpay keys."})
+        }
+
         const { userId, items, amount, address} = req.body
 
         const orderData = {
@@ -168,6 +176,10 @@ const placeOrderRazorpay = async (req,res) => {
 const verifyRazorpay = async (req,res) => {
     try {
         
+        if (!razorpayInstance) {
+            return res.json({success:false, message: "Razorpay is not configured. Please add valid Razorpay keys."})
+        }
+
         const { userId, razorpay_order_id  } = req.body
 
         const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id)
